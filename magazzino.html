@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Materiali in magazzino — Super-T</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="small-header">
+    <a href="index.html" class="back">← Torna</a>
+    <img src="assets/logo.png" alt="Logo" class="logo-small">
+    <h2>Materiali in magazzino</h2>
+  </header>
+
+  <main class="container">
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Cerca materiale..." />
+      <select id="filter-cat">
+        <option value="">Tutte le categorie</option>
+      </select>
+    </div>
+
+    <table id="table-materiali" class="table">
+      <thead>
+        <tr><th>Codice</th><th>Descrizione</th><th>Categoria</th><th>Quantità</th><th>Ubicazione</th></tr>
+      </thead>
+      <tbody>
+        <!-- Popolato via JS -->
+      </tbody>
+    </table>
+
+    <div id="empty" class="empty" style="display:none;">Nessun materiale trovato.</div>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    // Carica materiali da data/materiali.json (o da API pubblica)
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMateriali();
+    });
+  </script>
+</body>
+</html>

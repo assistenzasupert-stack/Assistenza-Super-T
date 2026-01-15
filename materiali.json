@@ -1,0 +1,23 @@
+[
+  {
+    "codice": "MT-001",
+    "descrizione": "Cavo USB-A/USB-C 1m",
+    "categoria": "Cavi",
+    "quantita": 24,
+    "ubicazione": "Magazzino A - Scaffale 3"
+  },
+  {
+    "codice": "MT-002",
+    "descrizione": "Tastiera meccanica compatta",
+    "categoria": "Periferiche",
+    "quantita": 6,
+    "ubicazione": "Magazzino B - Scaffale 1"
+  },
+  {
+    "codice": "MT-003",
+    "descrizione": "Alimentatore 12V 3A",
+    "categoria": "Elettronica",
+    "quantita": 12,
+    "ubicazione": "Magazzino A - Scaffale 2"
+  }
+]
