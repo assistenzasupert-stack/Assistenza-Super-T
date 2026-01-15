@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Interventi Giornalieri</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="small-header">
+    <a href="filiali.html" class="back">← Torna</a>
+    <img src="assets/logo.png" alt="Logo" class="logo-small">
+    <h2>Modifica Interventi — Admin</h2>
+  </header>
+
+  <main class="container">
+    <div id="authCard" class="login-card" style="max-width:600px; margin:0 auto 18px;">
+      <form id="pwForm" autocomplete="off">
+        <label for="adm_password" class="pw-label">Inserisci password admin</label>
+        <input id="adm_password" name="adm_password" type="password" class="pw-input" autocomplete="off" />
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" id="pwCheck" class="btn-submit">Accedi</button>
+          <a href="filiali.html" class="btn-card" style="padding:10px 12px; display:inline-flex; align-items:center; justify-content:center;">Annulla</a>
+        </div>
+        <div id="pw-error" class="pw-error" role="alert" aria-live="polite" style="display:none; margin-top:8px;"></div>
+      </form>
+    </div>
+
+    <div id="adminForm" style="display:none; max-width:760px; margin:0 auto;">
+      <div class="login-card" style="text-align:left; padding:18px 16px;">
+        <label class="pw-label">Località</label>
+        <input id="f_localita" class="pw-input" />
+
+        <label class="pw-label" style="margin-top:8px;">Banca</label>
+        <input id="f_banca" class="pw-input" />
+
+        <label class="pw-label" style="margin-top:8px;">Km</label>
+        <input id="f_km" class="pw-input" />
+
+        <label class="pw-label" style="margin-top:8px;">Materiali</label>
+        <input id="f_materiali" class="pw-input" />
+
+        <label class="pw-label" style="margin-top:8px;">A/C</label>
+        <input id="f_ac" class="pw-input" />
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <button id="saveBtn" class="btn-submit">Salva questo</button>
+          <a href="filiali.html" class="btn-card" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 12px;">Torna indietro</a>
+        </div>
+
+        <div id="save-note" style="margin-top:12px; color:var(--muted); font-size:13px;">
+          Salvataggio: il file aggiornato verrà scaricato automaticamente come <code>filiali.json</code>. Per rendere le modifiche permanenti, carica quel file nella repository <code>data/filiali.json</code> (Add file → Upload / Replace).
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/js/filiali-admin.js"></script>
+</body>
+</html>
