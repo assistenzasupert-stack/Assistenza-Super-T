@@ -1,6 +1,5 @@
-/* intero file CSS aggiornato — sostituisci assets/css/styles.css esistente con questo contenuto */
 :root{
-  --accent:#ff8a00; /* arancio logo */
+  --accent:#ff8a00;
   --accent-2:#ffb34d;
   --bg:#06121a;
   --card:#081722;
@@ -30,7 +29,7 @@ body{
   font-synthesis: none;
 }
 
-/* ---------- Header principale (index) già esistente ---------- */
+/* ---------- Header principale (index) ---------- */
 .hero{
   text-align:center;
   padding:36px 16px 14px;
@@ -137,7 +136,20 @@ body{
   transition: transform .12s ease, box-shadow .12s ease, border-color .12s;
   position:relative;
 }
-.center-buttons{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; }
+.btn-card:focus{ outline:none; box-shadow: 0 0 0 4px rgba(255,138,0,0.08); }
+
+/* Specific center buttons container and small button sizing */
+.center-buttons{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.btn-center{
+  min-width:200px;
+  padding:10px 18px;
+}
 
 /* daily specific */
 .day-block{ margin-top:18px; }
