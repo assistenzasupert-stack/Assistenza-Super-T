@@ -1,0 +1,60 @@
+{
+  "2026-01-15": [
+    {
+      "localita": "Milano - Centro",
+      "banca": "Banca Alfa",
+      "km": "12",
+      "materiali": "ATM, Cavi",
+      "ac": "OK"
+    },
+    {
+      "localita": "Milano - Est",
+      "banca": "Banca Beta",
+      "km": "7",
+      "materiali": "Display",
+      "ac": "OK"
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    },
+    {
+      "localita": "",
+      "banca": "",
+      "km": "",
+      "materiali": "",
+      "ac": ""
+    }
+  ]
+}
