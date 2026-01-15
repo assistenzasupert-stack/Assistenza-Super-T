@@ -1,42 +1,271 @@
-<!doctype html>
-<html lang="it">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Informazioni giornaliere — Super‑T</title>
-  <link rel="stylesheet" href="assets/css/styles.css">
-</head>
-<body>
-  <header class="small-header">
-    <a href="index.html" class="back">← Torna</a>
-    <img src="assets/logo.png" alt="Logo" class="logo-small">
-    <h2>Informazioni giornaliere</h2>
-  </header>
+// Script per la pagina "Informazioni giornaliere".
+// - Legge data/filiali.json
+// - Garantisce che oggi sia sempre presente (8 spazi per giorno)
+// - Mostra edit inline se sei loggato (sessionStorage 'superT_auth' === '1')
+// - Permette l'esportazione / copia del JSON aggiornato per poi committarlo nella repo
 
-  <main class="container">
-    <div class="toolbar" style="justify-content:space-between; align-items:center;">
-      <div>
-        <strong>Visuale:</strong> le voci giornaliere mostrano fino a 8 spazi per giorno.
-      </div>
-      <div>
-        <button id="editToggle" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600;">Modifica (solo admin)</button>
-        <button id="exportBtn" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600; display:none;">Esporta JSON</button>
-        <button id="copyBtn" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600; display:none;">Copia JSON</button>
-      </div>
-    </div>
+(async function(){
+  const DATA_URL = 'data/filiali.json';
+  const MAX_ROWS_PER_DAY = 8;
 
-    <div id="daysContainer">
-      <!-- Giorni popolati da JS -->
-    </div>
+  function todayKey(){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`; // formato YYYY-MM-DD
+  }
 
-    <div id="empty" class="empty" style="display:none;">Nessuna informazione disponibile.</div>
+  async function fetchJSON(url){
+    const res = await fetch(url, { cache: "no-cache" });
+    if(!res.ok) throw new Error('Errore caricamento dati');
+    return res.json();
+  }
 
-    <div style="margin-top:18px; color:var(--muted); font-size:13px;">
-      Nota: per rendere permanenti le modifiche esporta il JSON e sostituisci il file <code>data/filiali.json</code> nella repository (Add file → Upload / Replace). Se vuoi posso guidarti su come committare il file.
-    </div>
-  </main>
+  function formatDateKey(key){
+    // da YYYY-MM-DD a DD/MM/YYYY
+    const [y,m,d] = key.split('-');
+    return `${d}/${m}/${y}`;
+  }
 
-  <script src="assets/js/auth.js"></script>
-  <script src="assets/js/filiali.js"></script>
-</body>
-</html>
+  function ensureTodayExists(data){
+    const t = todayKey();
+    if(!data[t]) {
+      // crea array con MAX_ROWS_PER_DAY oggetti vuoti
+      data[t] = Array.from({length: MAX_ROWS_PER_DAY}, () => ({
+        localita: '',
+        banca: '',
+        km: '',
+        materiali: '',
+        ac: ''
+      }));
+    } else {
+      // assicurati che l'array abbia lunghezza MAX_ROWS_PER_DAY
+      const arr = data[t];
+      if(arr.length < MAX_ROWS_PER_DAY){
+        while(arr.length < MAX_ROWS_PER_DAY) arr.push({ localita:'', banca:'', km:'', materiali:'', ac:'' });
+      } else if(arr.length > MAX_ROWS_PER_DAY){
+        arr.length = MAX_ROWS_PER_DAY;
+      }
+    }
+  }
+
+  function sortDatesWithTodayFirst(keys){
+    const t = todayKey();
+    const other = keys.filter(k => k !== t).sort((a,b) => b.localeCompare(a)); // discendente
+    if(keys.includes(t)) return [t, ...other];
+    return [...other];
+  }
+
+  function createCell(text, editable){
+    const td = document.createElement('td');
+    td.className = 'cell';
+    if(editable){
+      td.contentEditable = 'true';
+      td.spellcheck = false;
+      td.innerText = text || '';
+    } else {
+      td.innerText = text || '';
+    }
+    return td;
+  }
+
+  function renderDayBlock(dayKey, entries, isEditable){
+    const wrapper = document.createElement('section');
+    wrapper.className = 'day-block';
+    const header = document.createElement('h3');
+    header.className = 'day-header';
+    header.innerText = `${formatDateKey(dayKey)}`;
+    wrapper.appendChild(header);
+
+    const table = document.createElement('table');
+    table.className = 'table daily-table';
+    const thead = document.createElement('thead');
+    thead.innerHTML = '<tr><th>#</th><th>Località</th><th>Banca</th><th>Km</th><th>Materiali installati</th><th>A/C</th></tr>';
+    table.appendChild(thead);
+    const tbody = document.createElement('tbody');
+
+    for(let i=0;i<MAX_ROWS_PER_DAY;i++){
+      const row = document.createElement('tr');
+      const idxTd = document.createElement('td');
+      idxTd.innerText = (i+1);
+      row.appendChild(idxTd);
+
+      const entry = entries[i] || { localita:'', banca:'', km:'', materiali:'', ac:'' };
+
+      row.appendChild(createCell(entry.localita, isEditable));
+      row.appendChild(createCell(entry.banca, isEditable));
+      row.appendChild(createCell(entry.km, isEditable));
+      row.appendChild(createCell(entry.materiali, isEditable));
+      row.appendChild(createCell(entry.ac, isEditable));
+
+      tbody.appendChild(row);
+    }
+
+    table.appendChild(tbody);
+    wrapper.appendChild(table);
+
+    return wrapper;
+  }
+
+  function collectDataFromDOM(container){
+    // ritorna oggetto { "YYYY-MM-DD": [ {localita,...}, ... ] }
+    const days = container.querySelectorAll('.day-block');
+    const result = {};
+    days.forEach(daySec => {
+      const dateHeader = daySec.querySelector('.day-header').innerText; // formato DD/MM/YYYY
+      const [d,m,y] = dateHeader.split('/');
+      const key = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+      const rows = Array.from(daySec.querySelectorAll('tbody tr'));
+      result[key] = rows.map(r => {
+        const tds = r.querySelectorAll('td');
+        // tds[0] è indice, tds[1]..tds[5] sono campi
+        return {
+          localita: tds[1].innerText.trim(),
+          banca: tds[2].innerText.trim(),
+          km: tds[3].innerText.trim(),
+          materiali: tds[4].innerText.trim(),
+          ac: tds[5].innerText.trim()
+        };
+      });
+    });
+    return result;
+  }
+
+  function showButtonsIfAdmin(){
+    const isAdmin = sessionStorage && sessionStorage.getItem && sessionStorage.getItem('superT_auth') === '1';
+    const editToggle = document.getElementById('editToggle');
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    if(!editToggle || !exportBtn || !copyBtn) return;
+    if(isAdmin){
+      editToggle.style.display = 'inline-block';
+    } else {
+      editToggle.style.display = 'none';
+      exportBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
+    }
+  }
+
+  function enableEditing(container, enable){
+    const editableCells = container.querySelectorAll('.daily-table td.cell[contenteditable]');
+    editableCells.forEach(td => {
+      td.contentEditable = enable ? 'true' : 'false';
+      if(enable) td.classList.add('editing');
+      else td.classList.remove('editing');
+    });
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    if(enable){
+      exportBtn.style.display = 'inline-block';
+      copyBtn.style.display = 'inline-block';
+    } else {
+      exportBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
+    }
+  }
+
+  function downloadJSON(data){
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'filiali.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function copyJSONToClipboard(data){
+    const text = JSON.stringify(data, null, 2);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => {
+        alert('JSON copiato negli appunti. Ora puoi incollarlo nel file data/filiali.json nella repo.');
+      }, () => {
+        prompt('Copia manuale del JSON (seleziona e copia):', text);
+      });
+    } else {
+      prompt('Copia manuale del JSON (seleziona e copia):', text);
+    }
+  }
+
+  // render iniziale
+  async function init(){
+    let data = {};
+    try {
+      data = await fetchJSON(DATA_URL);
+    } catch(e){
+      // se non esiste il file o errore, inizializziamo vuoto
+      console.warn('Non posso caricare data/filiali.json — creo struttura vuota.', e);
+      data = {};
+    }
+
+    ensureTodayExists(data);
+
+    const keys = Object.keys(data);
+    if(keys.length === 0){
+      document.getElementById('empty').style.display = 'block';
+      return;
+    } else {
+      document.getElementById('empty').style.display = 'none';
+    }
+
+    // ordina con oggi primo
+    const ordered = sortDatesWithTodayFirst(keys);
+
+    const container = document.getElementById('daysContainer');
+    container.innerHTML = '';
+
+    const isAdmin = sessionStorage && sessionStorage.getItem && sessionStorage.getItem('superT_auth') === '1';
+
+    for(const k of ordered){
+      // assicurati array abbia lunghezza MAX_ROWS_PER_DAY
+      const arr = Array.isArray(data[k]) ? data[k] : [];
+      while(arr.length < MAX_ROWS_PER_DAY) arr.push({ localita:'', banca:'', km:'', materiali:'', ac:'' });
+      if(arr.length > MAX_ROWS_PER_DAY) arr.length = MAX_ROWS_PER_DAY;
+
+      const block = renderDayBlock(k, arr, isAdmin);
+      container.appendChild(block);
+    }
+
+    showButtonsIfAdmin();
+
+    // toggle editing
+    const editToggle = document.getElementById('editToggle');
+    const exportBtn = document.getElementById('exportBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    let editing = false;
+
+    editToggle.addEventListener('click', () => {
+      editing = !editing;
+      editToggle.innerText = editing ? 'Esci modifica' : 'Modifica (solo admin)';
+      enableEditing(container, editing);
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const out = collectDataFromDOM(container);
+      downloadJSON(out);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const out = collectDataFromDOM(container);
+      copyJSONToClipboard(out);
+    });
+
+    // se la pagina resta aperta, controlla ogni 60s se il giorno è cambiato e in quel caso ricarica la vista
+    let lastToday = todayKey();
+    setInterval(() => {
+      const nowToday = todayKey();
+      if(nowToday !== lastToday){
+        // ricarica per avere il nuovo giorno in alto
+        lastToday = nowToday;
+        init(); // re-render
+      }
+    }, 60_000);
+  }
+
+  // Avvio
+  document.addEventListener('DOMContentLoaded', init);
+})();
