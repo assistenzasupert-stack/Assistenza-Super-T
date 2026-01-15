@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Informazioni giornaliere — Super‑T</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="small-header">
+    <a href="index.html" class="back">← Torna</a>
+    <img src="assets/logo.png" alt="Logo" class="logo-small">
+    <h2>Informazioni giornaliere</h2>
+  </header>
+
+  <main class="container">
+    <div class="toolbar" style="justify-content:space-between; align-items:center;">
+      <div>
+        <strong>Visuale:</strong> le voci giornaliere mostrano fino a 8 spazi per giorno.
+      </div>
+      <div>
+        <button id="editToggle" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600;">Modifica (solo admin)</button>
+        <button id="exportBtn" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600; display:none;">Esporta JSON</button>
+        <button id="copyBtn" class="btn-card" style="padding:8px 12px; min-width:auto; font-weight:600; display:none;">Copia JSON</button>
+      </div>
+    </div>
+
+    <div id="daysContainer">
+      <!-- Giorni popolati da JS -->
+    </div>
+
+    <div id="empty" class="empty" style="display:none;">Nessuna informazione disponibile.</div>
+
+    <div style="margin-top:18px; color:var(--muted); font-size:13px;">
+      Nota: per rendere permanenti le modifiche esporta il JSON e sostituisci il file <code>data/filiali.json</code> nella repository (Add file → Upload / Replace). Se vuoi posso guidarti su come committare il file.
+    </div>
+  </main>
+
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/filiali.js"></script>
+</body>
+</html>
