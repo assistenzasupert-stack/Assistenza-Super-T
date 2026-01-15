@@ -8,6 +8,7 @@
   --muted:#9fb0c8;
   --border: rgba(255,255,255,0.06);
   --radius:12px;
+  --saima-red: #ff4d4d;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
@@ -64,9 +65,16 @@ body{
   text-shadow: 0 2px 18px rgba(255,138,0,0.12);
 }
 
+/* Container for subtitle and extra lines */
+.title-block{
+  display:inline-block;
+  text-align:center;
+  margin-top:8px;
+}
+
 /* Title Manutenzione (BIANCA, due righe) */
 .title-subwhite{
-  margin:6px 0 6px;
+  margin:0;
   font-size:20px;
   line-height:1.05;
   letter-spacing: 1px;
@@ -76,10 +84,28 @@ body{
   text-shadow: none;
 }
 
+/* Extra lines: "ufficiale" e "SAIMA" */
+.title-extra{
+  margin-top:6px;
+}
+.title-extra .ufficiale{
+  color:var(--text);
+  font-size:14px;
+  font-weight:600;
+  line-height:1.1;
+}
+.title-extra .saima{
+  color: var(--saima-red); /* solo SAIMA in rosso */
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+  margin-top:2px;
+}
+
 /* subtitle */
 .subtitle{
   color:var(--muted);
-  margin-top:8px;
+  margin-top:12px;
 }
 
 /* Menu as buttons */
@@ -126,8 +152,9 @@ body{
   border-top:1px solid rgba(255,255,255,0.02);
   margin-top:auto;
 }
+.footer small{ line-height:1.4; }
 
-/* Login page */
+/* Login page styles (kept in the same file) */
 .login-page{
   display:flex;
   align-items:center;
@@ -182,6 +209,7 @@ body{
 @media (max-width:640px){
   .title-super{ font-size:22px; }
   .title-subwhite{ font-size:16px; }
+  .title-extra .saima{ font-size:16px; }
   .btn-card{ min-width:160px; padding:12px 16px; }
   .logo{ width:120px; }
   .login-card{ padding:20px 14px; width:320px; }
