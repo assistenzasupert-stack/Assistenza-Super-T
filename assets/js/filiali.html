@@ -2,11 +2,11 @@
 // - Usa data/filiali.json (se presente) o preferisce la copia in localStorage (chi salva può scaricare e poi sostituire il file nella repo).
 // - Mostra solo le righe con almeno un campo non vuoto.
 // - Oggi viene sempre mostrato in cima.
+// - Setup admin button per aprire filiali-admin.html (con log di debug)
 
 (function(){
   const DATA_URL = 'data/filiali.json';
-  const MAX_ROWS_PER_DAY = 8;
-  const LOCAL_KEY = 'filiali_data_custom'; // se esiste, ha priorità sulla data/filiali.json
+  const LOCAL_KEY = 'filiali_data_custom';
 
   function todayKey(){
     const d = new Date();
@@ -32,7 +32,7 @@
   }
 
   function isEntryEmpty(e){
-    return !(e.localita || e.banca || e.km || e.materiali || e.ac);
+    return !(e && (e.localita || e.banca || e.km || e.materiali || e.ac));
   }
 
   function ensureToday(data){
@@ -40,7 +40,6 @@
     if(!data[t]) {
       data[t] = [];
     }
-    // ensure array length up to MAX_ROWS_PER_DAY but not necessary; we'll show only saved entries
     if(!Array.isArray(data[t])) data[t] = [];
   }
 
@@ -49,6 +48,13 @@
     const others = keys.filter(k => k !== t).sort((a,b) => b.localeCompare(a)); // descending
     if(keys.includes(t)) return [t, ...others];
     return [...others];
+  }
+
+  function escapeHtml(text){
+    if(!text && text!==0) return '';
+    return String(text).replace(/[&<>"'`]/g, (s) => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;'
+    })[s]);
   }
 
   function render(data){
@@ -98,36 +104,38 @@
     }
   }
 
-  function escapeHtml(text){
-    if(!text && text!==0) return '';
-    return String(text).replace(/[&<>"'`]/g, (s) => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;'
-    })[s]);
-  }
-
-  // prefer localStorage saved copy if present (così dopo che admin salva in locale si vede subito)
   async function loadAndRender(){
     let data = {};
     const local = localStorage.getItem(LOCAL_KEY);
     if(local){
-      try { data = JSON.parse(local); ensureToday(data); render(data); return; } catch(e){ /* fallthrough */ }
+      try { data = JSON.parse(local); ensureToday(data); render(data); return; } catch(e){ console.warn('local parse failed', e); }
     }
     data = await fetchJSON(DATA_URL);
     ensureToday(data);
     render(data);
   }
 
-  // button admin -> apre filiali-admin.html
   function setupAdminButton(){
-    const adminBtn = document.getElementById('adminBtn');
-    if(adminBtn) adminBtn.addEventListener('click', () => {
-      // apri la pagina di admin (che chiede password)
-      window.location.href = 'filiali-admin.html';
+    document.addEventListener('DOMContentLoaded', () => {
+      const adminBtn = document.getElementById('adminBtn');
+      if(!adminBtn){
+        console.warn('adminBtn non presente nella pagina');
+        return;
+      }
+      adminBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        console.log('Admin button cliccato — redirect a filiali-admin.html');
+        // apri la pagina admin
+        window.location.href = 'filiali-admin.html';
+      });
     });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     setupAdminButton();
-    loadAndRender();
+    loadAndRender().catch(err => {
+      console.error('Errore caricamento dati filiali:', err);
+      document.getElementById('empty').style.display = 'block';
+    });
   });
 })();
