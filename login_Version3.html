@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Super‑T</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <main class="login-page">
+    <div class="login-card">
+      <img src="assets/logo.png" alt="Logo" class="logo login-logo">
+      <form id="pwForm" class="pw-form" autocomplete="off">
+        <label for="password" class="pw-label">Password</label>
+        <input id="password" name="password" type="password" class="pw-input" autocomplete="off" required />
+        <div class="pw-actions">
+          <button type="submit" class="btn-submit">Accedi</button>
+        </div>
+        <div id="pw-error" class="pw-error" role="alert" aria-live="polite" style="display:none;"></div>
+      </form>
+    </div>
+  </main>
+
+  <script src="assets/js/login.js"></script>
+</body>
+</html>
