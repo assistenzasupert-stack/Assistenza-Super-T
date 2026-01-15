@@ -7,15 +7,25 @@
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    // Controllo di autenticazione all'apertura della pagina
+    document.addEventListener('DOMContentLoaded', () => {
+      requireAuth(); // reindirizza a login.html se non autenticato
+    });
+  </script>
+
   <header class="hero">
     <div class="logo-wrap">
       <img src="assets/logo.png" alt="Super-T logo" class="logo" id="site-logo">
     </div>
 
-    <h1 class="title-fullwidth">
-      Ｓｕｐｅｒ-Ｔ<br>
-      Ｍａｎｕｔｅｎｚｉｏｎｅ Ｂａｎｃａｒｉａ
-    </h1>
+    <h1 class="title-super">Ｓｕｐｅｒ-Ｔ</h1>
+
+    <h2 class="title-subwhite">
+      Ｍａｎｕｔｅｎｚｉｏｎｅ<br>
+      Ｂａｎｃａｒｉａ
+    </h2>
 
     <p class="subtitle">Scegli una opzione</p>
   </header>
